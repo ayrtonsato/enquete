@@ -1,27 +1,47 @@
 import { SingUpController } from './signup'
 import { MissingParamError, InvalidParamError, ServerError } from '../errors'
 import { EmailValidator } from '../protocols'
+import { AccountModel } from '../../domain/models/account'
+import { AddAccount, AddAccountModel } from '../../domain/usecases/add-account'
 
 interface SutTypes {
 	sut: SingUpController
 	emailValidatorStub: EmailValidator
+	addAccountStub: AddAccount
 }
 
 const makeEmailValidator = (): EmailValidator => {
 	class EmailValidatorStub implements EmailValidator {
 		isValid (email: string): boolean {
-			return false
+			return true
 		}
 	}
 	return new EmailValidatorStub()
 }
 
+const makeAddAccount = (): AddAccount => {
+	class AddAccountStub implements AddAccount {
+		add (account: AddAccountModel): AccountModel {
+			const fakeAccount = {
+				id: 'valid_id',
+				name: 'valid_name',
+				email: 'valid_email@email.com',
+				password: 'valid_password'
+			}
+			return fakeAccount
+		}
+	}
+	return new AddAccountStub()
+}
+
 const makeSut = (): SutTypes => {
 	const emailValidatorStub = makeEmailValidator()
-	const sut = new SingUpController(emailValidatorStub)
+	const addAccountStub = makeAddAccount()
+	const sut = new SingUpController(emailValidatorStub, addAccountStub)
 	return {
 		sut,
-		emailValidatorStub
+		emailValidatorStub,
+		addAccountStub
 	}
 }
 
@@ -144,5 +164,24 @@ describe('Signup Controller', () => {
 		const httpResponse = sut.handle(httpRequest)
 		expect(httpResponse.statusCode).toBe(500)
 		expect(httpResponse.body).toEqual(new ServerError())
+	})
+
+	test('Should call add account with correct values', () => {
+		const { sut, addAccountStub } = makeSut()
+		const addSpy = jest.spyOn(addAccountStub, 'add')
+		const httpRequest = {
+			body: {
+				name: 'any_name',
+				email: 'any_email@email.com',
+				password: 'any_password',
+				passwordConfirmation: 'any_password'
+			}
+		}
+		sut.handle(httpRequest)
+		expect(addSpy).toHaveBeenCalledWith({
+			name: 'any_name',
+			email: 'any_email@email.com',
+			password: 'any_password'
+		})
 	})
 })
