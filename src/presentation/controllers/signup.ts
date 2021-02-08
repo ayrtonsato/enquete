@@ -10,5 +10,11 @@ export class SingUpController {
 		if (!httpRequest.body.email) {
 			return badRequest(new MissingParamError('email'))
 		}
+		const requiredField = ['name', 'email']
+		for (const field of requiredField) {
+			if (!httpRequest.body[field]) {
+				return badRequest(new MissingParamError(field))
+			}
+		}
 	}
 }
