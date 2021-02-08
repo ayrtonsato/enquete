@@ -2,5 +2,11 @@
 	"extends": "standard-with-typescript",
 	"parserOptions": {
 		"project": "./tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/indent": 0,
+		"no-tabs": "off",
+		"indent": [2, "tab"],
+		"@typescript-eslint/strict-boolean-expressions": 0
 	}
 }
