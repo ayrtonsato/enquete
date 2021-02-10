@@ -10,6 +10,9 @@ module.exports = {
 		'<rootDir>/src/**/*.ts',
 		'!<rootDir>/src/main/*.ts'
 	],
+	watchPathIgnorePatterns: [
+		'<rootDir>/node_modules'
+	],
 	// The test environment that will be used for testing
 	testEnvironment: 'node',
 	preset: '@shelf/jest-mongodb',
