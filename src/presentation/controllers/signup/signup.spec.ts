@@ -1,4 +1,4 @@
-import { SingUpController } from './signup'
+import { SignUpController } from './signup'
 import { MissingParamError, InvalidParamError, ServerError } from '../../errors'
 import {
 	EmailValidator,
@@ -8,7 +8,7 @@ import {
 } from './signup-protocols'
 
 interface SutTypes {
-	sut: SingUpController
+	sut: SignUpController
 	emailValidatorStub: EmailValidator
 	addAccountStub: AddAccount
 }
@@ -40,7 +40,7 @@ const makeAddAccount = (): AddAccount => {
 const makeSut = (): SutTypes => {
 	const emailValidatorStub = makeEmailValidator()
 	const addAccountStub = makeAddAccount()
-	const sut = new SingUpController(emailValidatorStub, addAccountStub)
+	const sut = new SignUpController(emailValidatorStub, addAccountStub)
 	return {
 		sut,
 		emailValidatorStub,
