@@ -11,7 +11,8 @@ module.exports = {
 		'!<rootDir>/src/main/*.ts'
 	],
 	watchPathIgnorePatterns: [
-		'<rootDir>/node_modules'
+		'<rootDir>/node_modules',
+		'<rootDir>/globalConfig.json'
 	],
 	// The test environment that will be used for testing
 	testEnvironment: 'node',
