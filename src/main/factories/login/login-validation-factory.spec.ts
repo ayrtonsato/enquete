@@ -1,12 +1,11 @@
 import {
-	CompareFieldsValidation,
+	EmailValidation,
 	RequiredFieldValidation,
-	ValidationComposite,
-	EmailValidation
+	ValidationComposite
 } from '../../../presentation/helpers/validators'
 import { Validation } from '../../../presentation/protocols/validation'
 import { EmailValidator } from '../../../presentation/protocols/email-validator'
-import { makeSignupValidation } from './signup-validation'
+import { makeLoginValidation } from './login-validation-factory'
 
 jest.mock('../../../presentation/helpers/validators/validation-composite')
 
@@ -21,12 +20,11 @@ const makeEmailValidator = (): EmailValidator => {
 
 describe('SignupValidation Factory', () => {
 	test('Should call ValidationComposite with all validations', () => {
-		makeSignupValidation()
+		makeLoginValidation()
 		const validations: Validation[] = []
-		for (const field of ['name', 'email', 'password', 'passwordConfirmation']) {
+		for (const field of ['email', 'password']) {
 			validations.push(new RequiredFieldValidation(field))
 		}
-		validations.push(new CompareFieldsValidation('password', 'passwordConfirmation'))
 		validations.push(new EmailValidation('email', makeEmailValidator()))
 		expect(ValidationComposite).toHaveBeenLastCalledWith(validations)
 	})
