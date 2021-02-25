@@ -8,11 +8,22 @@ import {
 } from './signup-controller-protocols'
 import { HttpRequest } from '../../protocols'
 import { ok, badRequest } from '../../helpers/http/http-helpers'
+import { Authentication, AuthenticationModel } from '../login/login-controller-protocols'
 
 interface SutTypes {
 	sut: SignUpController
 	addAccountStub: AddAccount
 	validationStub: Validation
+	authenticationStub: Authentication
+}
+
+const makeAuthentication = (): Authentication => {
+	class AuthenticationStub implements Authentication {
+		async auth (authentication: AuthenticationModel): Promise<string> {
+			return 'any_token'
+		}
+	}
+	return new AuthenticationStub()
 }
 
 const makeAddAccount = (): AddAccount => {
@@ -41,13 +52,15 @@ const makeFakeAccount = (): AccountModel => ({
 })
 
 const makeSut = (): SutTypes => {
+	const authenticationStub = makeAuthentication()
 	const addAccountStub = makeAddAccount()
 	const validationStub = makeValidation()
-	const sut = new SignUpController(addAccountStub, validationStub)
+	const sut = new SignUpController(authenticationStub, addAccountStub, validationStub)
 	return {
 		sut,
 		addAccountStub,
-		validationStub
+		validationStub,
+		authenticationStub
 	}
 }
 
@@ -99,5 +112,15 @@ describe('Signup Controller', () => {
 		jest.spyOn(validationStub, 'validate').mockReturnValueOnce(new MissingParamError('any_field'))
 		const httpResponse = await sut.handle(makeFakeRequest())
 		expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
+	})
+
+	test('Should call Authentication with correct value', async () => {
+		const { sut, authenticationStub } = makeSut()
+		const isValidSpy = jest.spyOn(authenticationStub, 'auth')
+		await sut.handle(makeFakeRequest())
+		expect(isValidSpy).toHaveBeenCalledWith({
+			email: 'any_email@email.com',
+			password: 'any_password'
+		})
 	})
 })
