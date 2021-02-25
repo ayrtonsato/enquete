@@ -7,7 +7,7 @@ import {
 	Validation
 } from './signup-controller-protocols'
 import { HttpRequest } from '../../protocols'
-import { ok, badRequest } from '../../helpers/http/http-helpers'
+import { ok, badRequest, serverError } from '../../helpers/http/http-helpers'
 import { Authentication, AuthenticationModel } from '../login/login-controller-protocols'
 
 interface SutTypes {
@@ -122,5 +122,15 @@ describe('Signup Controller', () => {
 			email: 'any_email@email.com',
 			password: 'any_password'
 		})
+	})
+
+	test('Should return 500 if authentication throws', async () => {
+		const { sut, authenticationStub } = makeSut()
+		jest.spyOn(authenticationStub, 'auth')
+			.mockReturnValueOnce(
+				new Promise((resolve, reject) => reject(new Error()))
+			)
+		const httpResponse = await sut.handle(makeFakeRequest())
+		expect(httpResponse).toEqual(serverError(new Error()))
 	})
 })
