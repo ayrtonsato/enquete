@@ -12,7 +12,8 @@ module.exports = {
 	],
 	watchPathIgnorePatterns: [
 		'<rootDir>/node_modules',
-		'<rootDir>/globalConfig.json'
+		'<rootDir>/globalConfig.json',
+		'<rootDir>/data'
 	],
 	// The test environment that will be used for testing
 	testEnvironment: 'node',
